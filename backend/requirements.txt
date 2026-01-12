@@ -1,21 +1,27 @@
-# PyTorch (CUDA 12.1)
+# PyTorch (CUDA 12.1 Version)
 # pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
-# PaddlePaddle GPU (optional)
+# PaddlePaddle (GPU Version)
 # python -m pip install paddlepaddle-gpu==3.0.0b2 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
 
 
 # Core Orchestration
 langgraph
-langchain==0.0.354
+langchain
+langchain-community
+langchain-core
+langchain-ollama
 
 # AI & Inference
 ollama
+# faster-whisper runs locally and needs the GPU support
 faster-whisper
-paddleocr==2.7.0.3
+paddleocr
 
 # Vector Database
+# chromadb will utilize the system RAM (16GB)
 chromadb
+# Force CPU faiss to save VRAM for the LLM/Whisper
 faiss-cpu
 
 # Backend API
@@ -27,6 +33,8 @@ pydantic
 # Utilities
 requests
 numpy
+# For audio preprocessing
 librosa
 soundfile
+# For monitoring system health
 prometheus-client
