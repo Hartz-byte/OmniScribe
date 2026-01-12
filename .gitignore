@@ -3,3 +3,6 @@
 
 # frontend
 /frontend/node_modules/
+
+# models
+/models/

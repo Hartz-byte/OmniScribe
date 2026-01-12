@@ -1,17 +1,35 @@
 import os
+import sys
+import types
 from huggingface_hub import snapshot_download
 from faster_whisper import WhisperModel
+
+try:
+    import langchain_core.documents
+    m_docstore = types.ModuleType("langchain.docstore.document")
+    m_docstore.Document = langchain_core.documents.Document
+    sys.modules["langchain.docstore.document"] = m_docstore
+
+    import langchain_text_splitters
+    m_text_splitter = types.ModuleType("langchain.text_splitter")
+    m_text_splitter.RecursiveCharacterTextSplitter = langchain_text_splitters.RecursiveCharacterTextSplitter
+    sys.modules["langchain.text_splitter"] = m_text_splitter
+
+    print("✅ Applied Master LangChain v0.3 compatibility patch (Docstore & TextSplitter).")
+except ImportError as e:
+    print(f"⚠️ Patch failed: {e}. Ensure langchain-core and langchain-text-splitters are installed.")
+
+
 from paddleocr import PaddleOCR
 
-# 1. Define the target directory
+# Target directory
 BASE_MODEL_PATH = r"D:\AIML-Projects\OmniScribe\models"
 os.makedirs(BASE_MODEL_PATH, exist_ok=True)
 
 def download_all():
     print(f"🚀 Starting model downloads to: {BASE_MODEL_PATH}")
 
-    # --- A. Download Embedding Model (BGE-Small-En) ---
-    # We use snapshot_download to force it into our D: drive folder
+    # Embedding Model (BGE-Small-En)
     print("\n--- 1/3 Downloading Embedding Model (BGE-Small-En) ---")
     embedding_path = os.path.join(BASE_MODEL_PATH, "bge-small-en")
     snapshot_download(
@@ -21,23 +39,22 @@ def download_all():
     )
     print(f"✅ Embedding model saved to {embedding_path}")
 
-    # --- B. Download Faster-Whisper (Small-v3) ---
-    # 'small' is the best balance for 4GB VRAM. 
+    # Faster-Whisper (Small-v3)
     print("\n--- 2/3 Downloading Faster-Whisper Model ---")
     whisper_path = os.path.join(BASE_MODEL_PATH, "whisper-small")
-    # We trigger the download by initializing the model with a download_root
     WhisperModel("small", device="cpu", download_root=whisper_path)
     print(f"✅ Whisper model saved to {whisper_path}")
 
-    # --- C. Download PaddleOCR (PP-OCRv4) ---
-    # PaddleOCR downloads three models: Detection, Recognition, and Classification
+    # PaddleOCR (PP-OCRv4)
     print("\n--- 3/3 Downloading PaddleOCR Models ---")
-    # Setting this env variable tells Paddle where to store models
     os.environ["BASE_MODEL_PATH"] = BASE_MODEL_PATH 
-    # Initialize PaddleOCR; it will auto-download to the default cache first, 
-    # but we will move/point to it in the final app.
-    ocr = PaddleOCR(use_angle_cls=True, lang='en', show_log=False)
-    print("✅ PaddleOCR default models initialized.")
+    
+    try:
+        # Disable the logger to prevent spam during initialization
+        ocr = PaddleOCR(use_angle_cls=True, lang='en', show_log=False)
+        print("✅ PaddleOCR default models initialized.")
+    except Exception as e:
+        print(f"❌ PaddleOCR Warning: {e}")
 
     print("\n✨ All models are ready in your D: drive!")
 
