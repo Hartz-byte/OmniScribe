@@ -1,0 +1,32 @@
+# PyTorch (CUDA 12.1)
+# pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# PaddlePaddle GPU (optional)
+# python -m pip install paddlepaddle-gpu==3.0.0b2 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+
+
+# Core Orchestration
+langgraph
+langchain==0.0.354
+
+# AI & Inference
+ollama
+faster-whisper
+paddleocr==2.7.0.3
+
+# Vector Database
+chromadb
+faiss-cpu
+
+# Backend API
+fastapi
+uvicorn
+python-multipart
+pydantic
+
+# Utilities
+requests
+numpy
+librosa
+soundfile
+prometheus-client
