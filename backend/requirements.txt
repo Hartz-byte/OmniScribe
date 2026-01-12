@@ -2,39 +2,42 @@
 # pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 # PaddlePaddle (GPU Version)
-# python -m pip install paddlepaddle-gpu==3.0.0b2 -i https://www.paddlepaddle.org.cn/packages/stable/cu118/
+# pip install paddlepaddle-gpu==2.6.1 -f https://www.paddlepaddle.org.cn/whl/windows/mkl/avx/stable.html
 
+# CRITICAL PINS
+numpy<2.0
+protobuf==3.20.2
+opencv-python-headless<4.11
 
-# Core Orchestration
+# AI Engines
+torch
+paddlepaddle-gpu==2.6.1
+paddleocr>=2.7.0,<2.8.0
+faster-whisper
+sentence-transformers
+
+# LangChain & Orchestration
 langgraph
 langchain
 langchain-community
 langchain-core
 langchain-ollama
+langchain-chroma
+langchain-huggingface
+huggingface_hub
 
-# AI & Inference
-ollama
-# faster-whisper runs locally and needs the GPU support
-faster-whisper
-paddleocr
-
-# Vector Database
-# chromadb will utilize the system RAM (16GB)
+# Database & Backend
 chromadb
-# Force CPU faiss to save VRAM for the LLM/Whisper
 faiss-cpu
-
-# Backend API
 fastapi
 uvicorn
 python-multipart
 pydantic
 
-# Utilities
+# Utils
 requests
-numpy
-# For audio preprocessing
 librosa
 soundfile
-# For monitoring system health
 prometheus-client
+
+# pip install "opencv-python-headless<4.11"
