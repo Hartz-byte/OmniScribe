@@ -85,8 +85,39 @@ async def ingest_image(file: UploadFile = File(...)):
 async def chat(query: str = Form(...)):
     print(f"💬 Processing Query: {query}")
     inputs = {"query": query, "context": [], "response": "", "is_sufficient": False}
+    
+    # Trigger LangGraph workflow
     result = agent_app.invoke(inputs)
-    return {"answer": result["response"], "context_used": result["context"]}
+
+    print(f"🤖 AI Response: {result['response']}")
+    print("-" * 50)
+    
+    return {
+        "answer": result["response"],
+        "context_used": result["context"]
+    }
+
+@app.post("/feedback")
+async def learn_from_feedback(
+    original_query: str = Form(...), 
+    correct_answer: str = Form(...)
+):
+    """
+    Implements the Self-Learning Memory System.
+    Ingests human corrections as 'High Priority' context.
+    """
+    print(f"🧠 Self-Learning triggered for: {original_query}")
+    
+    # Create a synthetic document with the correction
+    learning_text = f"[HUMAN CORRECTION] Question: {original_query}\nAnswer: {correct_answer}"
+    
+    # Save to Vector DB immediately
+    vector_db.add_texts(
+        texts=[learning_text],
+        metadatas=[{"source": "human_feedback", "type": "correction"}]
+    )
+    
+    return {"status": "learned", "message": "Memory updated. I won't make that mistake again."}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

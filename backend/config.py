@@ -26,5 +26,6 @@ OLLAMA_BASE_URL = "http://localhost:11434"
 
 # Hardware Settings
 EMBEDDING_DEVICE = "cpu" 
-WHISPER_DEVICE = "cuda"
+# Whisper to CPU to save VRAM for Llama
+WHISPER_DEVICE = "cpu"
 WHISPER_COMPUTE_TYPE = "int8"

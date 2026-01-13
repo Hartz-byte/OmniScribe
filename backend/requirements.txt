@@ -34,6 +34,9 @@ uvicorn
 python-multipart
 pydantic
 
+# Autonomous Research
+tavily-python
+
 # Utils
 requests
 librosa
