@@ -7,7 +7,6 @@ BACKEND_DIR = os.path.join(BASE_DIR, "backend")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
 
 # GLOBAL DIRECTORY OVERRIDES
-# This forces Paddle to use D:\AIML-Projects\OmniScribe\models
 os.environ["PADDLE_HOME"] = MODELS_DIR
 os.environ["PADDLEX_HOME"] = MODELS_DIR
 os.environ["HF_HOME"] = MODELS_DIR
@@ -22,8 +21,8 @@ VECTOR_DB_PATH = os.path.join(BACKEND_DIR, "chroma_db")
 COLLECTION_NAME = "omni_knowledge"
 
 # LLM Settings
-LLM_MODEL_NAME = "llama3.1:8b" 
-OLLAMA_BASE_URL = "http://localhost:11434/v1"
+LLM_MODEL_NAME = "llama3.1:8b"
+OLLAMA_BASE_URL = "http://localhost:11434"
 
 # Hardware Settings
 EMBEDDING_DEVICE = "cpu" 
