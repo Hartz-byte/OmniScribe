@@ -1,10 +1,17 @@
 import os
 import sys
+from dotenv import load_dotenv
+
+# Load environment variables from .env file at project root
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 # Project Paths
 BASE_DIR = r"D:\AIML-Projects\OmniScribe"
 BACKEND_DIR = os.path.join(BASE_DIR, "backend")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
+
+# TAVILY API KEY (loaded from .env)
+os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY", "") 
 
 # GLOBAL DIRECTORY OVERRIDES
 os.environ["PADDLE_HOME"] = MODELS_DIR
@@ -26,6 +33,5 @@ OLLAMA_BASE_URL = "http://localhost:11434"
 
 # Hardware Settings
 EMBEDDING_DEVICE = "cpu" 
-# Whisper to CPU to save VRAM for Llama
 WHISPER_DEVICE = "cpu"
 WHISPER_COMPUTE_TYPE = "int8"

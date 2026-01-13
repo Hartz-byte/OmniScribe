@@ -1,9 +1,10 @@
+import config
+
 from typing import TypedDict, List
 from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 from langgraph.graph import StateGraph, END
 from langchain_community.tools.tavily_search import TavilySearchResults
-import config
 from vector_store import get_vector_store
 
 # Web search Tool

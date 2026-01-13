@@ -42,5 +42,6 @@ requests
 librosa
 soundfile
 prometheus-client
+python-dotenv
 
 # pip install "opencv-python-headless<4.11"
