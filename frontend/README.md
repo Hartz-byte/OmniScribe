@@ -1,73 +1,157 @@
-# React + TypeScript + Vite
+# 🎨 OmniScribe Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Modern React frontend with a sleek dark theme for interacting with the OmniScribe AI assistant.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+- 💬 **Chat Interface** - Real-time conversation with AI
+- 📤 **Multi-Modal Ingestion** - Upload audio, images, and documents
+- 🎤 **Audio Recording** - Built-in microphone recording
+- 📂 **Folder Scanning** - One-click document import
+- 📝 **Feedback System** - Correct AI responses for learning
+- 🌙 **Dark Theme** - Premium glassmorphism design
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Technology | Purpose |
+|------------|---------|
+| React 19 | UI Framework |
+| TypeScript | Type Safety |
+| Tailwind CSS | Styling |
+| Vite | Build Tool |
+| Lucide React | Icons |
+| React Dropzone | File Upload |
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📁 Project Structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── chat/
+│   │   │   ├── ChatWindow.tsx       # Main chat interface
+│   │   │   ├── MessageBubble.tsx    # Message display
+│   │   │   ├── SourcesAccordion.tsx # Source citations
+│   │   │   └── ThinkingIndicator.tsx
+│   │   ├── ingestion/
+│   │   │   ├── IngestionDashboard.tsx  # Upload dashboard
+│   │   │   ├── AudioRecorder.tsx       # Mic recording
+│   │   │   ├── FileDropzone.tsx        # Drag & drop
+│   │   │   └── ProcessingLogs.tsx      # Status logs
+│   │   ├── feedback/
+│   │   │   └── FeedbackModal.tsx    # Correction modal
+│   │   └── layout/
+│   │       └── Sidebar.tsx          # Navigation
+│   ├── services/
+│   │   └── api.ts                   # API client
+│   ├── hooks/
+│   │   └── useAudioRecorder.ts      # Audio hook
+│   ├── types/
+│   │   └── index.ts                 # TypeScript types
+│   ├── App.tsx                      # Main app
+│   ├── main.tsx                     # Entry point
+│   └── index.css                    # Global styles
+├── package.json
+├── vite.config.ts
+├── tailwind.config.js
+└── tsconfig.json
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Setup
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+- Node.js 20+
+- npm or yarn
+
+### Installation
+
+```bash
+cd frontend
+npm install
 ```
+
+### Development
+
+```bash
+npm run dev
+```
+
+Opens at: **http://localhost:5173**
+
+### Production Build
+
+```bash
+npm run build
+```
+
+Output in `dist/` folder.
+
+---
+
+## 🎨 Design System
+
+### Color Palette
+
+| Token | Color | Usage |
+|-------|-------|-------|
+| `--bg-primary` | `#0a0a0f` | Main background |
+| `--bg-secondary` | `#12121a` | Cards/panels |
+| `--accent` | `#7c3aed` | Primary accent (purple) |
+| `--success` | `#22c55e` | Success states |
+| `--error` | `#ef4444` | Error states |
+
+### Components
+
+- **Glassmorphism** - `backdrop-blur` with subtle borders
+- **Micro-animations** - Smooth transitions on interactions
+- **Responsive** - Works on desktop and tablet
+
+---
+
+## 🔌 API Integration
+
+The frontend communicates with the backend via REST API:
+
+```typescript
+// services/api.ts
+
+sendChatMessage(query: string)      // POST /chat
+ingestAudio(file: Blob)             // POST /ingest/audio
+ingestImage(file: File)             // POST /ingest/image
+ingestText(file: File)              // POST /ingest/text
+scanKnowledgeFolder()               // POST /ingest/scan
+submitFeedback(query, answer)       // POST /feedback
+healthCheck()                       // GET /
+```
+
+---
+
+## 🐳 Docker
+
+The frontend is served via Nginx in Docker:
+
+```nginx
+# Serves static files from /usr/share/nginx/html
+# Proxies /api/* to backend:8000
+```
+
+Access at: **http://localhost** (port 80)
+
+---
+
+## 📝 Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start dev server |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
