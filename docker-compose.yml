@@ -1,0 +1,82 @@
+services:
+  # ====================
+  # Backend (FastAPI + AI)
+  # ====================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: backend
+    container_name: omniscribe-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist models (download once, reuse)
+      - ./models:/app/models
+      # Persist vector database
+      - ./backend/chroma_db:/app/backend/chroma_db
+      # Knowledge folder for document ingestion
+      - ./knowledge:/app/knowledge
+    environment:
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - PYTHONUNBUFFERED=1
+      # Docker path overrides
+      - OMNISCRIBE_BASE_DIR=/app
+      - OMNISCRIBE_BACKEND_DIR=/app/backend
+      - OMNISCRIBE_MODELS_DIR=/app/models
+      - OMNISCRIBE_KNOWLEDGE_DIR=/app/knowledge
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ====================
+  # Frontend (Nginx)
+  # ====================
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: frontend
+    container_name: omniscribe-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ====================
+  # Ollama (LLM Server)
+  # ====================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: omniscribe-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      # Mount existing local Ollama models (already has llama3.1:8b)
+      - D:/Ollama/Ollama_Models:/root/.ollama/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+    restart: unless-stopped
+    # Pull llama3.1:8b on first run
+    # docker exec omniscribe-ollama ollama pull llama3.1:8b
+
+    # No longer using Docker volumes - everything stored locally

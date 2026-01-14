@@ -1,0 +1,52 @@
+# ===================================
+# OmniScribe Docker Requirements
+# Linux/CUDA compatible versions
+# ===================================
+
+# CRITICAL PINS
+numpy<2.0
+protobuf==3.20.2
+opencv-python-headless<4.11
+
+# PyTorch with CUDA (installed separately in Dockerfile)
+# torch is installed via pip with CUDA index
+
+# PaddlePaddle GPU (Linux)
+paddlepaddle-gpu==2.6.1
+
+# AI Engines
+paddleocr>=2.7.0,<2.8.0
+faster-whisper
+sentence-transformers
+
+# LangChain & Orchestration
+langgraph
+langchain
+langchain-community
+langchain-core
+langchain-ollama
+langchain-chroma
+langchain-huggingface
+huggingface_hub
+
+# Database & Backend
+chromadb
+faiss-cpu
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+
+# Autonomous Research
+tavily-python
+
+# Document Processing
+pypdf
+python-docx
+
+# Utils
+requests
+librosa
+soundfile
+prometheus-client
+python-dotenv

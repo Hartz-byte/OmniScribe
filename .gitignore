@@ -31,6 +31,8 @@ models/
 # Knowledge
 knowledge/
 
+ollama_models/
+
 # IDE / Editor
 .vscode/*
 !.vscode/extensions.json
