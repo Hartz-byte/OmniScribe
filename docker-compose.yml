@@ -65,6 +65,9 @@ services:
     container_name: omniscribe-ollama
     ports:
       - "11434:11434"
+    environment:
+      # Keep model loaded for 24 hours (instead of default 5 minutes)
+      - OLLAMA_KEEP_ALIVE=24h
     volumes:
       # Mount existing local Ollama models (already has llama3.1:8b)
       - D:/Ollama/Ollama_Models:/root/.ollama/models
