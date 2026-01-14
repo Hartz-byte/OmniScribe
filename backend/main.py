@@ -119,5 +119,146 @@ async def learn_from_feedback(
     
     return {"status": "learned", "message": "Memory updated. I won't make that mistake again."}
 
+@app.post("/ingest/text")
+async def ingest_text(file: UploadFile = File(...)):
+    """
+    Ingest document files (.txt, .md, .pdf, .docx) into the knowledge base.
+    Splits large files into chunks for better retrieval.
+    """
+    # Validate file type
+    allowed_extensions = ['.txt', '.md', '.pdf', '.docx']
+    file_ext = os.path.splitext(file.filename)[1].lower()
+    if file_ext not in allowed_extensions:
+        raise HTTPException(status_code=400, detail=f"Only {allowed_extensions} files are supported")
+    
+    try:
+        # Read file content based on type
+        content = await file.read()
+        
+        if file_ext in ['.txt', '.md']:
+            text = content.decode('utf-8')
+        elif file_ext == '.pdf':
+            from pypdf import PdfReader
+            import io
+            pdf_reader = PdfReader(io.BytesIO(content))
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text() + "\n"
+        elif file_ext == '.docx':
+            from docx import Document
+            import io
+            doc = Document(io.BytesIO(content))
+            text = "\n".join([para.text for para in doc.paragraphs])
+        
+        print(f"📄 Processing document: {file.filename} ({len(text)} chars)")
+        
+        # Split into chunks if large (>1000 chars per chunk)
+        chunk_size = 1000
+        chunks = []
+        if len(text) > chunk_size:
+            # Split by paragraphs first, then by size
+            paragraphs = text.split('\n\n')
+            current_chunk = ""
+            for para in paragraphs:
+                if len(current_chunk) + len(para) < chunk_size:
+                    current_chunk += para + "\n\n"
+                else:
+                    if current_chunk:
+                        chunks.append(current_chunk.strip())
+                    current_chunk = para + "\n\n"
+            if current_chunk:
+                chunks.append(current_chunk.strip())
+        else:
+            chunks = [text]
+        
+        # Add to vector DB
+        for i, chunk in enumerate(chunks):
+            tagged_text = f"[DOCUMENT - {file_ext.upper()}]: {chunk}"
+            vector_db.add_texts(
+                texts=[tagged_text], 
+                metadatas=[{"source": "document", "type": file_ext, "filename": file.filename, "chunk": i}]
+            )
+        
+        return {
+            "status": "success", 
+            "filename": file.filename,
+            "file_type": file_ext,
+            "chunks_created": len(chunks),
+            "text_snippet": text[:100] + "..." if len(text) > 100 else text
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/ingest/scan")
+async def scan_knowledge_folder():
+    """
+    Scan the knowledge folder and ingest all document files.
+    Supports: .txt, .md, .pdf, .docx
+    Directory: D:\\AIML-Projects\\OmniScribe\\knowledge
+    """
+    import config
+    import glob
+    
+    knowledge_dir = config.KNOWLEDGE_DIR
+    
+    if not os.path.exists(knowledge_dir):
+        os.makedirs(knowledge_dir)
+        return {"status": "created", "message": f"Created empty knowledge folder at {knowledge_dir}", "files_processed": 0}
+    
+    # Find all document files
+    patterns = ['*.txt', '*.md', '*.pdf', '*.docx']
+    files_found = []
+    for pattern in patterns:
+        files_found.extend(glob.glob(os.path.join(knowledge_dir, pattern)))
+    
+    if not files_found:
+        return {"status": "empty", "message": "No document files found in knowledge folder", "files_processed": 0}
+    
+    processed = []
+    errors = []
+    
+    for filepath in files_found:
+        try:
+            filename = os.path.basename(filepath)
+            file_ext = os.path.splitext(filename)[1].lower()
+            
+            # Extract text based on file type
+            if file_ext in ['.txt', '.md']:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    text = f.read()
+            elif file_ext == '.pdf':
+                from pypdf import PdfReader
+                pdf_reader = PdfReader(filepath)
+                text = ""
+                for page in pdf_reader.pages:
+                    text += page.extract_text() + "\n"
+            elif file_ext == '.docx':
+                from docx import Document
+                doc = Document(filepath)
+                text = "\n".join([para.text for para in doc.paragraphs])
+            else:
+                continue
+            
+            print(f"📂 Scanning: {filename} ({len(text)} chars)")
+            
+            # Add to vector DB with file tag
+            tagged_text = f"[DOCUMENT - {filename}]: {text}"
+            vector_db.add_texts(
+                texts=[tagged_text], 
+                metadatas=[{"source": "knowledge_folder", "type": file_ext, "filename": filename, "path": filepath}]
+            )
+            processed.append(filename)
+            
+        except Exception as e:
+            errors.append({"file": filename, "error": str(e)})
+    
+    return {
+        "status": "success",
+        "files_processed": len(processed),
+        "files": processed,
+        "errors": errors if errors else None
+    }
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

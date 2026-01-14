@@ -27,7 +27,7 @@ export interface Message {
 
 export interface ProcessingLog {
     id: string;
-    type: 'audio' | 'image';
+    type: 'audio' | 'image' | 'text';
     filename: string;
     status: 'processing' | 'success' | 'error';
     message: string;

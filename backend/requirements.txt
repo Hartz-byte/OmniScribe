@@ -43,5 +43,7 @@ librosa
 soundfile
 prometheus-client
 python-dotenv
+pypdf
+python-docx
 
 # pip install "opencv-python-headless<4.11"

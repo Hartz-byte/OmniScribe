@@ -28,6 +28,9 @@ lerna-debug.log*
 # Models
 models/
 
+# Knowledge
+knowledge/
+
 # IDE / Editor
 .vscode/*
 !.vscode/extensions.json

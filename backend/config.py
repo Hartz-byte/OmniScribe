@@ -9,6 +9,7 @@ load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 BASE_DIR = r"D:\AIML-Projects\OmniScribe"
 BACKEND_DIR = os.path.join(BASE_DIR, "backend")
 MODELS_DIR = os.path.join(BASE_DIR, "models")
+KNOWLEDGE_DIR = os.path.join(BASE_DIR, "knowledge")
 
 # TAVILY API KEY (loaded from .env)
 os.environ["TAVILY_API_KEY"] = os.getenv("TAVILY_API_KEY", "") 

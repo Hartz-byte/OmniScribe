@@ -75,3 +75,47 @@ export async function healthCheck(): Promise<boolean> {
         return false;
     }
 }
+
+export interface TextIngestResponse {
+    status: string;
+    filename: string;
+    chunks_created: number;
+    text_snippet: string;
+}
+
+export interface ScanResponse {
+    status: string;
+    message?: string;
+    files_processed: number;
+    files?: string[];
+    errors?: { file: string; error: string }[];
+}
+
+export async function ingestText(file: File): Promise<TextIngestResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/ingest/text`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error(`Text ingestion failed: ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
+export async function scanKnowledgeFolder(): Promise<ScanResponse> {
+    const response = await fetch(`${API_BASE_URL}/ingest/scan`, {
+        method: 'POST',
+    });
+
+    if (!response.ok) {
+        throw new Error(`Folder scan failed: ${response.statusText}`);
+    }
+
+    return response.json();
+}
+

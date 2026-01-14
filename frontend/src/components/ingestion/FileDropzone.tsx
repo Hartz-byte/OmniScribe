@@ -1,16 +1,29 @@
 import { useCallback } from 'react';
 import { useDropzone, type Accept } from 'react-dropzone';
-import { Upload, FileAudio, FileImage } from 'lucide-react';
+import { Upload, FileAudio, FileImage, FileText } from 'lucide-react';
 
 interface FileDropzoneProps {
     onFileDrop: (files: File[]) => void;
-    acceptedFileTypes: 'audio' | 'image';
+    acceptedFileTypes: 'audio' | 'image' | 'text';
 }
 
 export function FileDropzone({ onFileDrop, acceptedFileTypes }: FileDropzoneProps) {
-    const accept: Accept = acceptedFileTypes === 'audio'
-        ? { 'audio/*': ['.mp3', '.wav'] }
-        : { 'image/*': ['.png', '.jpg', '.jpeg'] };
+    const getAccept = (): Accept => {
+        switch (acceptedFileTypes) {
+            case 'audio':
+                return { 'audio/*': ['.mp3', '.wav'] };
+            case 'image':
+                return { 'image/*': ['.png', '.jpg', '.jpeg'] };
+            case 'text':
+                return {
+                    'text/*': ['.txt', '.md'],
+                    'application/pdf': ['.pdf'],
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+                };
+        }
+    };
+
+    const accept = getAccept();
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         onFileDrop(acceptedFiles);
@@ -22,7 +35,29 @@ export function FileDropzone({ onFileDrop, acceptedFileTypes }: FileDropzoneProp
         multiple: true,
     });
 
-    const Icon = acceptedFileTypes === 'audio' ? FileAudio : FileImage;
+    const getIcon = () => {
+        switch (acceptedFileTypes) {
+            case 'audio':
+                return FileAudio;
+            case 'image':
+                return FileImage;
+            case 'text':
+                return FileText;
+        }
+    };
+
+    const Icon = getIcon();
+
+    const getExtensions = () => {
+        switch (acceptedFileTypes) {
+            case 'audio':
+                return '.mp3, .wav';
+            case 'image':
+                return '.png, .jpg';
+            case 'text':
+                return '.txt, .md, .pdf, .docx';
+        }
+    };
 
     return (
         <div
@@ -48,9 +83,10 @@ export function FileDropzone({ onFileDrop, acceptedFileTypes }: FileDropzoneProp
                     {isDragActive ? 'Drop files here' : `Drag & drop ${acceptedFileTypes} files`}
                 </p>
                 <p className="text-text-muted text-sm">
-                    or click to browse • {acceptedFileTypes === 'audio' ? '.mp3, .wav' : '.png, .jpg'}
+                    or click to browse • {getExtensions()}
                 </p>
             </div>
         </div>
     );
 }
+
